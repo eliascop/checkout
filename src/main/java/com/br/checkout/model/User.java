@@ -17,8 +17,7 @@ public class User {
     public static final String SEQUENCE_NAME = "users_sequence";
 	
 	@Id
-	@Getter @Setter 
-	private String id;
+	@Getter @Setter private String id;
 	@Getter @Setter private String name;
 	@Getter @Setter private String email;
 	

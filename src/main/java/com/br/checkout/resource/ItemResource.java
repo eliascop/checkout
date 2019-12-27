@@ -34,7 +34,7 @@ public class ItemResource {
 		try {
 			return ResponseEntity.status(HttpStatus.CREATED).body(itemService.insert(item));			
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();			
 		}
 	}
 
@@ -50,7 +50,7 @@ public class ItemResource {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@GetMapping("/{id}")
+	@GetMapping("/{codigo}")
 	public ResponseEntity<?> find(@PathVariable String codigo) {
 		return ResponseEntity.ok(itemService.findById(codigo));
 	}

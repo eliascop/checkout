@@ -34,7 +34,7 @@ public class UserResource {
 		try {
 			return ResponseEntity.status(HttpStatus.CREATED).body(userService.insert(user));			
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);			
+			return ResponseEntity.noContent().build();			
 		}
 	}
 
@@ -50,9 +50,9 @@ public class UserResource {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@GetMapping("/{id}")
-	public ResponseEntity<?> find(@PathVariable String id) {
-		return ResponseEntity.ok(userService.findById(id));
+	@GetMapping("/{codigo}")
+	public ResponseEntity<?> find(@PathVariable String codigo) {
+		return ResponseEntity.ok(userService.findById(codigo));
 	}
 
 }

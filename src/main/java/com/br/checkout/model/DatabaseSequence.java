@@ -11,9 +11,8 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class DatabaseSequence {
     @Id
-    @Getter @Setter
-    private String id;
-    @Getter @Setter
-    private Long sequence;
+    @Getter @Setter private String id;
+    @Getter @Setter private Long sequence;
  
 }
+ 
