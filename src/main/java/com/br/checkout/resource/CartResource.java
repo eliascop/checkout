@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.br.checkout.model.Item;
 import com.br.checkout.service.CartService;
 
 @RestController
@@ -23,18 +22,18 @@ public class CartResource{
 	@Autowired
 	private CartService cartService;
 		
-	@PostMapping
-	public ResponseEntity<?> insertItem(@PathVariable String userId, @Valid @RequestBody Item item) {
+	@PostMapping(value="/item/add",consumes = "application/json", produces = "application/json")
+	public ResponseEntity<?> insertItem(@Valid @RequestBody String userId, @Valid @RequestBody String itemId) {
 		try {
-			cartService.addItem(userId, item);
+			cartService.addItem(userId, itemId);
 			return ResponseEntity.status(HttpStatus.CREATED).build();			
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();			
 		}
 	}
 	
-	@PostMapping
-	public ResponseEntity<?> removeItem(@PathVariable String userId, @Valid @RequestBody String itemId) {
+	@GetMapping("/item/remove/{id}")
+	public ResponseEntity<?> removeItem(@PathVariable String userId, @PathVariable String itemId) {
 		try {
 			cartService.removeItem(userId, itemId);
 			return ResponseEntity.status(HttpStatus.CREATED).build();			
@@ -43,7 +42,7 @@ public class CartResource{
 		}
 	}
 	
-	@PostMapping
+	@GetMapping("/close/{id}")
 	public ResponseEntity<?> closeCart(@PathVariable String userId) {
 		try {
 			cartService.closeCart(userId);
@@ -53,7 +52,7 @@ public class CartResource{
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/item/{id}")
 	public ResponseEntity<?> find(@PathVariable String userId) {
 		return ResponseEntity.ok(cartService.findByUser(userId));
 	}

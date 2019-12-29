@@ -1,7 +1,7 @@
 package com.br.checkout.model;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -19,8 +19,8 @@ public class Cart {
 	
 	@Id
 	@Getter @Setter private String id;
-	@Getter @Setter private String userId;
-	@Getter @Setter private List<Item> items = new ArrayList<Item>();
+	@Getter @Setter private User user;
+	@Getter @Setter private List<Item> items;
 	@Getter @Setter private Date createdAt;
 	@Getter @Setter private Double cartTotal;
 	@Getter @Setter private Boolean cartClosed;
@@ -32,11 +32,12 @@ public class Cart {
 		this.createdAt = new Date();
 		this.cartTotal = 0.0;
 		this.cartClosed = CART_OPEN;
+		this.items = new ArrayList<Item>();
 	}
 	
-	public void addItem(Item item) {
-		items.add(item);	
-		items.sort(Comparator.comparing(Item::getName)); 
+	public void addItem(Item item) {		
+		items.add(item);
+		Collections.sort(items,Item.COMPARE_BY_NAME);
 		generateTotalCart();
 	}
 	

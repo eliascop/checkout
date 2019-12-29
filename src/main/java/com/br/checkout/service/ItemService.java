@@ -1,5 +1,6 @@
 package com.br.checkout.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +35,9 @@ public class ItemService {
 	}
 
 	public List<Item> findAll(){
-		return (List<Item>) this.itemRepository.findAll();
+		List<Item> items = this.itemRepository.findAll();
+		Collections.sort(items, Item.COMPARE_BY_NAME);
+		return items;
 	}
 	
 	public Optional<Item> findById(String id){

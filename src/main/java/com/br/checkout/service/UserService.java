@@ -30,7 +30,6 @@ public class UserService {
 		String[] nullPropertyNames = Utils.getNullPropertyNames(user);
 		BeanUtils.copyProperties(user, savedUser, nullPropertyNames);
 		return userRepository.save(savedUser);		
-		
 	}
 	
 	public void delete(String id) {

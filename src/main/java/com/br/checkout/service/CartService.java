@@ -10,6 +10,7 @@ import com.br.checkout.model.Cart;
 import com.br.checkout.model.Item;
 import com.br.checkout.model.User;
 import com.br.checkout.repository.CartRepository;
+import com.br.checkout.repository.ItemRepository;
 import com.br.checkout.repository.UserRepository;
 
 @Service 
@@ -19,18 +20,22 @@ public class CartService {
 	private CartRepository cartRepository;
 	
 	@Autowired 
+	private ItemRepository itemRepository;
+	
+	@Autowired 
 	private UserRepository userRepository;
 	
 	private final static Logger log = Logger.getLogger(CartService.class.getName());
 	
-	public void addItem(String userId, Item item) {
+	public void addItem(String userId, String itemId) {
+		Item storedItem = itemRepository.findById(itemId).orElseThrow(() -> new RuntimeException("Item not found"));
 		User storedUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 		Cart storedCart = cartRepository.findCartByUser(userId).get();		
 		if(storedCart == null) {
 			storedCart = new Cart();
-			storedCart.setUserId(storedUser.getId()); 
+			storedCart.setUser(storedUser); 
 		}
-		storedCart.addItem(item);
+		storedCart.addItem(storedItem);
 		log.info("Total cart of user "+storedUser.getName()+" is $ "+storedCart.getCartTotal());
 		cartRepository.save(storedCart);		
 	}
