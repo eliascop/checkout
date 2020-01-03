@@ -1,5 +1,7 @@
 package com.br.checkout.model;
 
+import java.util.Comparator;
+
 import javax.validation.constraints.Email;
 
 import org.springframework.data.annotation.Id;
@@ -33,4 +35,10 @@ public class User {
 	        "User[id=%s, name='%s', email='%s']",id, name, email
         );
 	}
+	
+	public static Comparator<User> COMPARE_BY_NAME = new Comparator<User>() {
+        public int compare(User u1, User u2) {
+            return u1.name.compareTo(u2.name);
+        }
+    };
 }

@@ -24,7 +24,7 @@ public class ItemResource {
 	@Autowired
 	private ItemService itemService;
 	
-	@GetMapping("/findAll")
+	@GetMapping("/")
 	public ResponseEntity<?> findAll(){
 		return ResponseEntity.ok(this.itemService.findAll());
 	}
@@ -32,9 +32,10 @@ public class ItemResource {
 	@PostMapping
 	public ResponseEntity<?> insert(@Valid @RequestBody Item item) {
 		try {
-			return ResponseEntity.status(HttpStatus.CREATED).body(itemService.insert(item));			
+			itemService.insert(item);			
+			return ResponseEntity.status(HttpStatus.CREATED).build();
 		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());			
 		}
 	}
 

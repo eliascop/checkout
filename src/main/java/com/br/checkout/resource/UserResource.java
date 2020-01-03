@@ -24,7 +24,7 @@ public class UserResource {
 	@Autowired
 	private UserService userService;
 	
-	@GetMapping("/findAll")
+	@GetMapping("/")
 	public ResponseEntity<?> findAll(){
 		return ResponseEntity.ok(this.userService.findAll());
 	}
@@ -32,9 +32,10 @@ public class UserResource {
 	@PostMapping
 	public ResponseEntity<?> insert(@Valid @RequestBody User user) {
 		try {
-			return ResponseEntity.status(HttpStatus.CREATED).body(userService.insert(user));			
+			userService.insert(user);			
+			return ResponseEntity.status(HttpStatus.CREATED).build();
 		}catch(Exception e) {
-			return ResponseEntity.noContent().build();			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());			
 		}
 	}
 

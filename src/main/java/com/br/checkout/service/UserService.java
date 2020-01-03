@@ -1,5 +1,6 @@
 package com.br.checkout.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,9 +18,9 @@ public class UserService {
 	@Autowired 
 	private UserRepository userRepository;
 	
-	public User insert(User user) {					
-		User local = userRepository.findUserByEmail(user.getEmail()).get();
-		if(local == null)
+	public User insert(User user) {
+		Optional<User> local = userRepository.findUserByEmail(user.getEmail());
+		if(!local.isPresent())
 			return this.userRepository.save(user);
 		else
 			throw new RuntimeException("There's already an user with this email!");
@@ -37,7 +38,9 @@ public class UserService {
 	}
 
 	public List<User> findAll(){
-		return this.userRepository.findAll();
+		List<User> users = this.userRepository.findAll();
+		Collections.sort(users, User.COMPARE_BY_NAME);
+		return users;		
 	}
 	
 	public Optional<User> findById(String id){
