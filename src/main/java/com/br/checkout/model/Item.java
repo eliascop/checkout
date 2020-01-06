@@ -20,19 +20,21 @@ public class Item {
 	
 	@Id
 	@Getter @Setter private String id;
-	@Getter @Setter private String name;
-	@Getter @Setter private Double value;
+	@Getter @Setter private String productId;
+	@Getter @Setter private String cartId;
+	@Getter @Setter private int quantity;
+	@Getter @Setter private Double itemTotal;	
 	
 	@Override
 	public String toString() {
 		return String.format(
-	        "Item[id=%s, name='%s', value='%s']",id, name,value
+	        "Item[id=%s, productId='%s', quantity='%s', itemTotal='%s']",id, productId,quantity,itemTotal
         );
 	}
 	
-	public static Comparator<Item> COMPARE_BY_NAME = new Comparator<Item>() {
+	public static Comparator<Item> COMPARE_BY_PRODUCT = new Comparator<Item>() {
         public int compare(Item item1, Item item2) {
-            return item1.name.compareTo(item2.name);
+            return item1.productId.compareTo(item2.productId);
         }
     };
 	

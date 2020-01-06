@@ -17,41 +17,60 @@ import lombok.Setter;
 @EqualsAndHashCode @AllArgsConstructor
 public class Cart {
 	
-	@Id
+	@Id 
 	@Getter @Setter private String id;
-	@Getter @Setter private User user;
+	@Getter @Setter private String userId;
 	@Getter @Setter private List<Item> items;
 	@Getter @Setter private Date createdAt;
 	@Getter @Setter private Double cartTotal;
 	@Getter @Setter private Boolean cartClosed;
 	
-	public static Boolean CART_OPEN = Boolean.TRUE;
-	public static Boolean CART_CLOSE = Boolean.FALSE;	
+	public static Boolean ST_CART_OPEN = Boolean.FALSE;
+	public static Boolean ST_CART_CLOSE = Boolean.TRUE;	
 	
-	public Cart() {
+	public Cart() { 
 		this.createdAt = new Date();
 		this.cartTotal = 0.0;
-		this.cartClosed = CART_OPEN;
+		this.cartClosed = ST_CART_OPEN;
 		this.items = new ArrayList<Item>();
-	}
+	} 
 	
-	public void addItem(Item item) {		
-		items.add(item);
-		Collections.sort(items,Item.COMPARE_BY_NAME);
+	public void addItem(Item item) {	
+		boolean flag = false;
+		for(Item i : items) {
+			if(i.getProductId().equals(item.getProductId())) {
+				flag=true;
+				i.setQuantity(i.getQuantity()+item.getQuantity());
+				i.setItemTotal(i.getItemTotal()+item.getItemTotal());
+			}
+		}
+		
+		if(flag==false)
+			items.add(item);
+
+		Collections.sort(items,Item.COMPARE_BY_PRODUCT);			
 		generateTotalCart();
 	}
 	
-	@SuppressWarnings("unlikely-arg-type")
-	public void removeItem(String itemId) {
-		items.remove(items.indexOf(itemId));
+	public void removeItem(Item item) {
+		boolean flag = false;
+		for(Item i : items) {
+			if(i.getProductId().equals(item.getProductId())) {
+				flag = true;
+				i.setQuantity(i.getQuantity()-1);
+				i.setItemTotal(item.getItemTotal());
+				if(i.getQuantity()==0)
+					items.remove(item);
+			}
+		}
+		if(flag == false)
+			items.removeIf(e -> e.getId().equals(item.getId()));
 		generateTotalCart();
 	}
 	
 	private void generateTotalCart() {
 		cartTotal = 0.0;
-		for(Item item: items) {
-			cartTotal+=item.getValue();
-		}
-		
+		for(Item item: items) 
+			cartTotal+=item.getItemTotal();		
 	}
 }

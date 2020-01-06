@@ -24,7 +24,7 @@ public class UserResource {
 	@Autowired
 	private UserService userService;
 	
-	@GetMapping("/")
+	@GetMapping(value = { "", "/" })
 	public ResponseEntity<?> findAll(){
 		return ResponseEntity.ok(this.userService.findAll());
 	}

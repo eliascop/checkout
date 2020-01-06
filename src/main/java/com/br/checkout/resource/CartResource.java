@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.br.checkout.model.Cart;
+import com.br.checkout.model.Item;
 import com.br.checkout.service.CartService;
 
 @RestController
@@ -21,21 +23,21 @@ public class CartResource{
 	
 	@Autowired
 	private CartService cartService;
-		
-	@PostMapping(value="/item/add",consumes = "application/json", produces = "application/json")
-	public ResponseEntity<?> insertItem(@Valid @RequestBody String userId, @Valid @RequestBody String itemId) {
+	
+	@PostMapping(value="/item/add/{userId}",consumes = "application/json")
+	public ResponseEntity<?> insertItem(@PathVariable String userId, @Valid @RequestBody Item item) {
 		try {
-			cartService.addItem(userId, itemId);
+			cartService.addItem(userId,item); 
 			return ResponseEntity.status(HttpStatus.CREATED).build();			
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();			
 		}
 	}
 	
-	@GetMapping("/item/remove/{id}")
-	public ResponseEntity<?> removeItem(@PathVariable String userId, @PathVariable String itemId) {
-		try {
-			cartService.removeItem(userId, itemId);
+	@PostMapping(value="/item/remove/{userId}",consumes = "application/json")
+	public ResponseEntity<?> removeItem(@PathVariable String userId, @Valid @RequestBody Item item) {
+		try { 
+			cartService.removeItem(userId,item.getProductId());
 			return ResponseEntity.status(HttpStatus.CREATED).build();			
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();			
@@ -52,14 +54,24 @@ public class CartResource{
 		}
 	}
 
-	@GetMapping("/item/{id}")
+	@GetMapping("/item/{userId}")
 	public ResponseEntity<?> find(@PathVariable String userId) {
-		return ResponseEntity.ok(cartService.findByUser(userId));
+		try {
+			Cart cart = cartService.findByUser(userId);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(cart);
+		}catch(Exception e) {
+			return ResponseEntity.noContent().build();
+		}
+	}
+	
+	@GetMapping("/item")
+	public ResponseEntity<?> findAll() {
+		return ResponseEntity.ok(this.cartService.findAll());
 	}
 
-	@DeleteMapping("/{userId}")
-	public ResponseEntity<?> delete(@PathVariable String userId) {
-		cartService.delete(userId);
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> delete(@PathVariable String id) {
+		cartService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
 

@@ -1,6 +1,7 @@
 package com.br.checkout.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,60 +9,71 @@ import org.springframework.stereotype.Service;
 
 import com.br.checkout.model.Cart;
 import com.br.checkout.model.Item;
-import com.br.checkout.model.User;
 import com.br.checkout.repository.CartRepository;
-import com.br.checkout.repository.ItemRepository;
-import com.br.checkout.repository.UserRepository;
 
 @Service 
 public class CartService {
 	
 	@Autowired 
 	private CartRepository cartRepository;
-	
-	@Autowired 
-	private ItemRepository itemRepository;
-	
-	@Autowired 
-	private UserRepository userRepository;
+
+	@Autowired
+	private ItemService itemService;
 	
 	private final static Logger log = Logger.getLogger(CartService.class.getName());
 	
-	public void addItem(String userId, String itemId) {
-		Item storedItem = itemRepository.findById(itemId).orElseThrow(() -> new RuntimeException("Item not found"));
-		User storedUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-		Cart storedCart = cartRepository.findCartByUser(userId).get();		
-		if(storedCart == null) {
-			storedCart = new Cart();
-			storedCart.setUser(storedUser); 
-		}
-		storedCart.addItem(storedItem);
-		log.info("Total cart of user "+storedUser.getName()+" is $ "+storedCart.getCartTotal());
-		cartRepository.save(storedCart);		
-	}
+	public void addItem(String userId, Item item) {
+		Optional<Cart> storedCart = cartRepository.findCartByUser(userId);		
+		Cart cart = new Cart();
+		if(!storedCart.isPresent()) {
+			cart.setUserId(userId);
+			cart = cartRepository.save(cart);
+		}else 
+			cart = storedCart.get();
+		
+
+		item.setCartId(cart.getId());
+		item = this.itemService.insert(item);
 	
-	public void removeItem(String userId, String itemId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-		Cart storedCart = cartRepository.findCartByUser(userId).get();		
-		if(storedCart != null) {
-			storedCart.removeItem(itemId);
-			if(storedCart.getItems().size() == 0) 
-				delete(storedCart.getId());	
-			else
-				cartRepository.save(storedCart);		
+		cart.addItem(item);			
+		
+		this.cartRepository.save(cart);
+		
+		log.info("Total cart of user "+userId+" is $ "+cart.getCartTotal()+","+cart.getItems().size()+" items");
+	}
+		
+	public void removeItem(String userId, String productId) {
+		Optional<Cart> storedCart = cartRepository.findCartByUser(userId);
+		if(storedCart.isPresent()) {
+
+			Item item = itemService.findByProductId(productId).get();			
+			itemService.remove(productId);		
+			Cart cart = storedCart.get();						
+			cart.removeItem(item); 
 				
-			log.info("Total cart of user "+user.getName()+" is $ "+storedCart.getCartTotal());
+			if(cart.getItems().size() == 0) 
+				delete(cart.getId());	
+			else 
+				cartRepository.save(cart);
+			
+			
+			log.info("Total cart of userX "+userId+" is $ "+cart.getCartTotal());
 		}
 	}
 	
 	public List<Item> closeCart(String userId){
 		Cart storedCart = cartRepository.findCartByUser(userId).orElseThrow(() -> new RuntimeException("Problem to close cart: User not found"));
-		storedCart.setCartClosed(Cart.CART_CLOSE);
+		storedCart.setCartClosed(Cart.ST_CART_CLOSE);
 		return storedCart.getItems();
 	}
 	
-	public void delete(String userId) {
-		cartRepository.deleteById(userId);
+	public void delete(String cartId) {
+		cartRepository.deleteById(cartId);
+	}
+	
+	public List<Cart> findAll(){
+		List<Cart> carts = this.cartRepository.findAll();
+		return carts;
 	}
 	
 	public Cart findByUser(String userId){

@@ -14,25 +14,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.br.checkout.model.Item;
-import com.br.checkout.service.ItemService;
+import com.br.checkout.model.Product;
+import com.br.checkout.service.ProductService;
 
 @RestController
-@RequestMapping("item")
-public class ItemResource {
-
+@RequestMapping("product")
+public class ProductResource {
+	
 	@Autowired
-	private ItemService itemService;
+	private ProductService productService;
 	
 	@GetMapping(value = { "", "/" })
 	public ResponseEntity<?> findAll(){
-		return ResponseEntity.ok(this.itemService.findAll());
+		return ResponseEntity.ok(this.productService.findAll());
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> insert(@Valid @RequestBody Item item) {
+	public ResponseEntity<?> insert(@Valid @RequestBody Product product) {
 		try {
-			itemService.insert(item);			
+			productService.insert(product);			
 			return ResponseEntity.status(HttpStatus.CREATED).build();
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());			
@@ -40,20 +40,20 @@ public class ItemResource {
 	}
 
 	@PutMapping("/{codigo}")
-	public ResponseEntity<?> update(@PathVariable String codigo, @Valid @RequestBody Item item) {
-		item.setId(codigo); 
-		return ResponseEntity.ok(itemService.update(item));  
+	public ResponseEntity<?> update(@PathVariable String codigo, @Valid @RequestBody Product product) {
+		product.setId(codigo); 
+		return ResponseEntity.ok(productService.update(product));  
 	}
 
 	@DeleteMapping("/{codigo}")
 	public ResponseEntity<?> delete(@PathVariable String codigo) {
-		itemService.delete(codigo);
+		productService.delete(codigo);
 		return ResponseEntity.noContent().build();
 	}
 	
 	@GetMapping("/{codigo}")
 	public ResponseEntity<?> find(@PathVariable String codigo) {
-		return ResponseEntity.ok(itemService.findById(codigo));
+		return ResponseEntity.ok(productService.findById(codigo));
 	}
 
 }
